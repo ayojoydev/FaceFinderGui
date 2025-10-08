@@ -454,6 +454,16 @@ class FaceMatcherGUI(QMainWindow):
         if not self.group_photo_path or not self.sets_dirs or self.group_photo_bgr is None:
             return
 
+        # === ОЧИСТКА СТАРЫХ РЕЗУЛЬТАТОВ ===
+        # Очищаем аналитику
+        while self.analytics_layout.count():
+            child = self.analytics_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+        self.summary_label.setText("")
+        self.clear_missing_faces()  # очищает миниатюры
+        # =================================
+
         # Блокируем интерфейс
         self.run_btn.setEnabled(False)
         self.progress_bar.setVisible(True)
