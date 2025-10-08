@@ -455,7 +455,7 @@ class FaceMatcherGUI(QMainWindow):
             return
 
         # === ОЧИСТКА СТАРЫХ РЕЗУЛЬТАТОВ ===
-        # Очищаем аналитику
+        # Очищаем аналитикуS
         while self.analytics_layout.count():
             child = self.analytics_layout.takeAt(0)
             if child.widget():
