@@ -499,7 +499,15 @@ class FaceMatcherGUI(QMainWindow):
                 min_det_score=0.35, sim_threshold=0.42, low_threshold=0.35
             )
 
-            # 4. Сохранение аннотированного фото
+            # 4. Вычисление отсутствий по сетам
+            per_set_abs = compute_per_set_absences(catalog, match_result["present"])
+
+            # Определяем ID, которые отсутствуют хотя бы в одном сете (среди присутствующих на группе)
+            problematic_ids = set()
+            for set_name, data in per_set_abs.items():
+                problematic_ids.update(data["missing_present_only"])
+
+            # 5. Сохранение аннотированного фото
             out_dir = Path("out_report")
             out_dir.mkdir(exist_ok=True)
             annotated_path = out_dir / "group_annotated.jpg"
@@ -507,15 +515,14 @@ class FaceMatcherGUI(QMainWindow):
                 match_result["image_bgr"],
                 match_result["faces"],
                 match_result["labels"],
-                annotated_path
+                annotated_path,
+                problematic_ids=problematic_ids  # ← теперь problematic_ids уже вычислен
             )
 
             annotated_img = cv2.imdecode(
                 np.fromfile(str(annotated_path), dtype=np.uint8),
                 cv2.IMREAD_COLOR
             )
-
-            per_set_abs = compute_per_set_absences(catalog, match_result["present"])
 
             # 5. Обновление UI
             if annotated_img is not None:

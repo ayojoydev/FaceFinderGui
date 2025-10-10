@@ -191,48 +191,58 @@ def match_group(app: FaceAnalysis, group_path: Path, catalog, min_det_score=0.35
     }
 
 
-def draw_annotated(img_bgr, faces, labels, out_path: Path):
+def draw_annotated(img_bgr, faces, labels, out_path: Path, problematic_ids=None):
+    if problematic_ids is None:
+        problematic_ids = set()
+
     img = img_bgr.copy()
     for f, lab in zip(faces, labels):
+        # Определяем ID из подписи (lab выглядит как "ID01 (0.95)" или "? ID02 (0.85)")
+        detected_id = None
+        if lab.startswith("ID"):
+            detected_id = lab.split()[0]  # "ID01"
+        elif lab.startswith("? ID"):
+            detected_id = lab.split()[1]  # "ID02"
+
+        # Выбираем цвета
+        if detected_id in problematic_ids:
+            # Красная рамка и подпись для проблемных лиц
+            box_color = (0, 0, 255)      # BGR: красный
+            text_bg_color = (0, 0, 255)  # Красный фон
+            text_color = (255, 255, 255) # Белый текст
+        else:
+            # Стандартные цвета (как раньше)
+            box_color = (255, 0, 0)      # BGR: синий
+            text_bg_color = (0, 0, 0)    # Чёрный фон
+            text_color = (255, 255, 255) # Белый текст
+
         x1, y1, x2, y2 = f["bbox"]
+        cv2.rectangle(img, (x1, y1), (x2, y2), box_color, 5)
 
-        # 1. Увеличенная рамка (толще и ярче)
-        cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 5)  # ярко-жёлтая, толщина 4
+        # Подпись
+        font_scale = 1.2
+        font_thickness = 3
+        (text_w, text_h), baseline = cv2.getTextSize(lab, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)
+        text_w = max(text_w, 180)
+        text_h = text_h + baseline + 10
 
-        # 2. Параметры текста — крупные и контрастные
-        font_scale = 1.2          # КРУПНЫЙ шрифт
-        font_thickness = 3        # Жирный текст
-        bg_color = (0, 0, 0)      # Чёрный фон — всегда контрастен
-        text_color = (255, 255, 255)  # Белый текст
-
-        # 3. Измеряем размер текста
-        (text_w, text_h), baseline = cv2.getTextSize(
-            lab, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness
-        )
-        text_w = max(text_w, 180)  # Минимальная ширина фона
-        text_h = text_h + baseline + 10  # Отступы сверху и снизу
-
-        # 4. Позиция фона: СТРОГО над лицом, даже если y1 - text_h < 0
         label_y1 = max(0, y1 - text_h)
         label_y2 = max(0, y1)
         label_x1 = x1
         label_x2 = min(img.shape[1], x1 + text_w)
 
-        # 5. Рисуем чёрный фон
-        cv2.rectangle(img, (label_x1, label_y1), (label_x2, label_y2), bg_color, -1)
-
-        # 6. Рисуем белый текст поверх
+        cv2.rectangle(img, (label_x1, label_y1), (label_x2, label_y2), text_bg_color, -1)
         cv2.putText(
-            img,
-            lab,
-            (label_x1 + 10, label_y2 - 10),  # отступы от краёв
+            img, lab,
+            (label_x1 + 10, label_y2 - 10),
             cv2.FONT_HERSHEY_SIMPLEX,
             font_scale,
             text_color,
             font_thickness,
             cv2.LINE_AA
         )
-    # Сохранение
+
+    # Сохранение (без изменений)
     ext = out_path.suffix.lower()
     if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
         out_path = out_path.with_suffix(".jpg")
