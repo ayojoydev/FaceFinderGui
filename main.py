@@ -641,7 +641,6 @@ class FaceMatcherGUI(QMainWindow):
         self.analytics_layout.addWidget(extra_group)
 
         # По сетам
-        # По сетам
         for set_name, data in per_set_abs.items():
             # Считаем, сколько уникальных людей в этом сете
             ids_in_set = [
@@ -653,23 +652,6 @@ class FaceMatcherGUI(QMainWindow):
             set_group = QGroupBox(f"📁 Сет: {set_name} ({set_count} чел.)")
             set_group.setStyleSheet("font-weight: bold; font-size: 14px;")
             set_layout = QVBoxLayout()
-
-            if data["missing_present_only"]:
-                set_layout.addWidget(QLabel("Отсутствуют в этом сете (но есть на группе):"))
-                for mid in data["missing_present_only"]:
-                    tag = create_tag(mid, COLOR_MISSING)
-                    set_layout.addWidget(tag)
-            else:
-                set_layout.addWidget(QLabel("✅ Все из группы присутствуют в этом сете"))
-
-            if data["unexpected_not_on_group"]:
-                set_layout.addWidget(QLabel("Есть в сете, но отсутствуют на группе:"))
-                for uid in data["unexpected_not_on_group"]:
-                    tag = create_tag(uid, COLOR_WARNING)
-                    set_layout.addWidget(tag)
-
-            set_group.setLayout(set_layout)
-            self.analytics_layout.addWidget(set_group)
 
             if data["missing_present_only"]:
                 set_layout.addWidget(QLabel("Отсутствуют в этом сете (но есть на группе):"))
