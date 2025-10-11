@@ -9,7 +9,7 @@ APP_VERSION = "1.0.0"
 APP_DESC = "Face matching utility (InsightFace + OpenCV)"
 ENTRY_POINT = "main.py"
 TARGET_NAME = "FaceMatcher.exe"
-ICON = "assets/app.ico"  # если нет — уберите параметр icon
+ICON = "assets/app.ico"
 
 # === Список пакетов ===
 # Явно перечисляем тяжелые модули, чтобы cx_Freeze не потерял бинари

@@ -2,13 +2,13 @@ from pathlib import Path
 from typing import Optional
 import cv2
 import numpy as np
-from typing import List, Dict
+from typing import List
 import sys
 
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QFileDialog, QLabel, QScrollArea, QFrame,
-    QGroupBox, QProgressBar, QMessageBox, QSpinBox, QGridLayout
+    QGroupBox, QProgressBar, QMessageBox, QGridLayout
 )
 from PySide6.QtCore import Qt, QObject, Signal,  QUrl
 from PySide6.QtGui import QPixmap, QImage, QDesktopServices

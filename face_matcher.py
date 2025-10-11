@@ -9,7 +9,7 @@ from insightface.app import FaceAnalysis
 
 
 from utils import (
-    imread_bgr, list_images, l2_normalize, cosine_sim, ALLOWED_EXTS
+    imread_bgr, list_images, l2_normalize, cosine_sim
 )
 
 
